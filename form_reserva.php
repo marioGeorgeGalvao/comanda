@@ -55,6 +55,8 @@
         <script type="text/javascript" language="javascript" src="js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
         <script type="text/javascript" language="javascript" src="js/jquery.dataTables.php"></script>
+        <script type="text/javascript" language="javascript" src="js/jquery_mascara.js"></script>
+        <script type="text/javascript" language="javascript" src="js/jquery.maskedinput.js"></script>
 
         <?php include "/js/jquery.dataTables.php"; ?> <!-- Nao pode apagar, isso é responsavel por aparecer os campos do dataTable -->
 
@@ -65,7 +67,13 @@
                 });
             });
         </script>
-       
+       <script type="text/javascript">
+            $(document).ready(function(){
+            $("input.data").mask("99/99/9999");
+            $("input.cpf").mask("999.999.999-99");
+            $("input.cep").mask("99.999-999");
+        });
+        </script>
         <!--Script do DataTable Fim -->
         
         <?php include 'module/alerts.php'?>
@@ -74,7 +82,7 @@
     error_reporting(E_ALL & ~ E_NOTICE & ~ E_DEPRECATED);
     $conexao = mysql_connect("localhost", "root", "") or die(mysql_erro());
     $banco = mysql_selectdb("comanda", $conexao);
-    $sql = ("SELECT * FROM mesa");
+    $sql = ("SELECT * FROM reserva");
     $resultado = mysql_query($sql);
     ?>
 
@@ -85,45 +93,76 @@
             <?php include 'include/Menu_legal.php' ?>
             <!-- Menu fim -->
 
-            <?php
-            $idmesa = $_POST['idmesa'];
-            $numero_mesa = $_POST['numero_mesa'];
-            $lugar_mesa = $_POST['lugar_mesa'];
-            
-
-            if (isset($_POST['btnSave'])) {
-                $sql = "INSERT INTO `mesa`(`idmesa`, `numero_mesa`, `lugar_mesa`) "
-                        . "VALUES ('$idmesa','$numero_mesa','$lugar_mesa')";
-
-                mysql_query($sql);
-                writeMsg('save.sukses');
-            }
-            ?>
-
             <!-- Inicio Formulario de cadastro -->       
-            <h2>CADASTRO DE MESA </h2>
+            <h2>CADASTRO RESERVA </h2>
 
+
+
+
+            <fieldset>
             <div class="row">
-                <form method="post" class="form">
+                <form method="post" class="form" action="paginas/reserva/envia_dados_reserva.php">
+                <div class="form-group col-md-3">
+                    <label for="campo2">Mesa </label>
+
+                    <select name="idmesa">
+
+                        <option>Selecione a mesa</option>
+
+                        <?php $query = mysql_query("SELECT * FROM mesa"); ?> <!-- Aki puxa todas as categorias existentes-->
+
+                        <?php while ($prod = mysql_fetch_array($query)) { ?>      <!-- Aki puxa todas as categorias existentes-->
+
+                            <option value="<?php echo $prod['idmesa'] ?>"><?php echo $prod['numero_mesa'] ?></option>
+
+                        <?php } ?>
+
+                    </select>
+
+                </div>
+
+            </div>
+            </fieldset>
+
+            <fieldset>
+            <div class="row">
+
                     <div class="col-md-12">
 
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-4">
 
-                            <label for="campo1">Mesa</label>
+                            <label for="campo1">Responsavel pela Reserva</label>
 
-                            <input type="text" name="numero_mesa" class="form-control" id="campo1">
-
-                        </div>
-
-
-                        <div class="form-group col-md-8">
-
-                            <label for="campo1">Lugares</label>
-
-                            <input type="text" name="lugar_mesa" class="form-control" >
+                            <input type="text" name="responsavel_reserva" class="form-control" id="campo1">
 
                         </div>
 
+                        <div class="form-group col-md-2">
+
+                            <label for="campo1">CPF responsavel</label>
+
+                            <input type="text" name="cpf_responsavel" class="form-control" id="campo1">
+
+                        </div>
+
+                        <div class="form-group col-md-2">
+
+                            <label for="campo1">Data reserva:</label>
+
+                            <input type="text" name="data_reserva" class="form-control" >
+
+                        </div>
+
+</fieldset>
+            <fieldset>
+                        <div class="form-group col-md-4">
+
+                            <label for="campo1">Descrição da reserva :</label>
+
+                            <textarea name="descricao" rows="10" cols="60"></textarea>
+
+                        </div>
+            </fieldset>
                             <div class="col-md-8">
 
                                 <button id="btnUpdate" name="btnSave" class="btn btn-primary">Salvar</button>
@@ -151,8 +190,11 @@
                         <thead>
                             <tr id="titulo_tabela">
                                 <th>Id</th>
-                                <th>Mesa</th>
-                                <th>Descrição</th>
+                                <th>Mesa Reservada</th>
+                                <th>Responsavel Reserva</th>
+                                <th>Data Reserva</th>
+                                <th>Descricao</th>
+                                <th>Situação Mesa</th>
                                 
                                 <th>Ação</th>
                             </tr>
@@ -161,25 +203,32 @@
 <?php
 while ($linha = mysql_fetch_assoc($resultado)) {
 
+    $idreserva = $linha['idreserva'];
     $idmesa = $linha['idmesa'];
-    $lugar_mesa = $linha['numero_mesa'];
-    $numero_mesa = $linha['lugar_mesa'];
+    $responavel_reserva = $linha['responsavel_reserva'];
+    $data_reserva = $linha['data_reserva'];
+    $descricao = $linha['descricao'];
     
     ?>
 
                             <tr>
+                                <td> <?php echo "<p>  " . $linha ['idreserva'] . "<br>"; ?> </td>
 
-                                <td> <?php echo "<p>  " . $linha ['idmesa'] . "<br>"; ?> </td>
+                                <td> <?php echo "<p>  N° " . $linha ['idmesa'] . "<br>"; ?> </td>
 
-                                <td> <?php echo "<p>  " . $linha ['numero_mesa'] . "<br>"; ?> </td>
+                                <td> <?php echo "<p>  " . $linha ['responsavel_reserva'] . "<br>"; ?> </td>
 
-                                <td> <?php echo "<p>  " . $linha ['lugar_mesa'] . "<br>"; ?> </td>
+                                <td> <?php echo "<p>  " . $linha ['data_reserva'] . "<br>"; ?> </td>
+
+                                <td> <?php echo "<p>  " . $linha ['descricao'] . "<br>"; ?> </td>
+
+                                <td> <?php echo "<p>  " . $linha ['situacao_mesa'] . "<br>"; ?> </td>
 
                                 <td> 
 
-                                    <?php printf('<a href="paginas/mesa/deleta_dados_mesa.php?id=%s">Excluir</a>', $linha['idmesa']); ?>
+                                    <?php printf('<a href="paginas/reserva/deleta_dados_reserva.php?id=%s">Excluir</a>', $linha['idreserva']); ?>
 
-                                    <?php printf('<a href="paginas/mesa/form_editar_mesa.php?id=%s">Alterar</a>', $linha['idmesa']); ?>
+                                    <?php printf('<a href="paginas/reserva/form_editar_reserva.php?id=%s">Alterar</a>', $linha['idreserva']); ?>
                                 </td>
 
                             </tr>
@@ -191,12 +240,6 @@ while ($linha = mysql_fetch_assoc($resultado)) {
                 </div>
             </div>
         </div>
-
-        <!-- jQuery -->
-        <script src="bootstrap/js/jquery.js"></script>
-
-        <!-- Bootstrap Core JavaScript -->
-        <script src="bootstrap/js/bootstrap.min.js"></script>
 
     </body>
 </html>

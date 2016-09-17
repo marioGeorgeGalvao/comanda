@@ -65,7 +65,6 @@
                 });
             });
         </script>
-       
         <!--Script do DataTable Fim -->
         
         <?php include 'module/alerts.php'?>
@@ -74,7 +73,7 @@
     error_reporting(E_ALL & ~ E_NOTICE & ~ E_DEPRECATED);
     $conexao = mysql_connect("localhost", "root", "") or die(mysql_erro());
     $banco = mysql_selectdb("comanda", $conexao);
-    $sql = ("SELECT * FROM mesa");
+    $sql = ("SELECT * FROM imagem");
     $resultado = mysql_query($sql);
     ?>
 
@@ -86,43 +85,76 @@
             <!-- Menu fim -->
 
             <?php
-            $idmesa = $_POST['idmesa'];
-            $numero_mesa = $_POST['numero_mesa'];
-            $lugar_mesa = $_POST['lugar_mesa'];
             
+            if(isset($_POST['btnSave'])){
+            
+                if($imagem != NULL) { 
+                $nomeFinal = time().'.jpg';
+                if (move_uploaded_file($imagem['imagem'], $nomeFinal)) {
+                    $tamanhoImg = filesize($nomeFinal); 
 
-            if (isset($_POST['btnSave'])) {
-                $sql = "INSERT INTO `mesa`(`idmesa`, `numero_mesa`, `lugar_mesa`) "
-                        . "VALUES ('$idmesa','$numero_mesa','$lugar_mesa')";
+                    $mysqlImg = addslashes(fread(fopen($nomeFinal, "r"), $tamanhoImg)); 
+                    
+                    mysql_query("INSERT INTO imagem ('idproduto','descricao','imagem') "
+                            . "VALUES ('$idproduto','$descricao','$mysqlImg'") 
+                            or die("O sistema não foi capaz de executar a query"); 
 
-                mysql_query($sql);
+		unlink($nomeFinal);
+		mysql_query($sql);
                 writeMsg('save.sukses');
-            }
-            ?>
+                
+		header("location:imagem_produto.php");
+                        }
+                } 
+                else { 
+                        echo"Você não realizou o upload de forma satisfatória."; 
+            } 
+            
+                }
+                            ?>
 
             <!-- Inicio Formulario de cadastro -->       
-            <h2>CADASTRO DE MESA </h2>
+            <h2>CADASTRO DE IMAGEM AO PRODUTO </h2>
 
             <div class="row">
                 <form method="post" class="form">
                     <div class="col-md-12">
 
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-6">
+                                <label for="campo2">Produto: </label>
 
-                            <label for="campo1">Mesa</label>
+                                <select name="idproduto">
 
-                            <input type="text" name="numero_mesa" class="form-control" id="campo1">
+                                    <option>Selecione a categoria</option>
 
-                        </div>
+                                        <?php $query = mysql_query("SELECT * FROM produto"); ?> <!-- Aki puxa todas as categorias existentes-->
+
+                                        <?php while ($prod = mysql_fetch_array($query)) { ?>      <!-- Aki puxa todas as categorias existentes-->
+
+                                        <option value="<?php echo $prod['idproduto'] ?>"><?php echo $prod['descricao'] ?></option>
+
+                                        <?php } ?> 
+
+                                </select>
+
+                            </div>
 
 
                         <div class="form-group col-md-8">
 
-                            <label for="campo1">Lugares</label>
+                            <label for="campo1">Descrição da imagem ao produto:</label>
 
-                            <input type="text" name="lugar_mesa" class="form-control" >
+                            <input type="text" name="descricao" class="form-control" >
 
                         </div>
+                        
+                        <div class="form-group col-md-8">
+                                <label for="imagem">Imagem:</label>
+                                <input type="file" name="imagem"/>
+                                <br/>
+                        </div>
+
+                        
 
                             <div class="col-md-8">
 
@@ -146,7 +178,7 @@
                 <div class="panel panel-success">
 
                     <!---- INICIO DA TABELA ---->
-                    <div class="panel-heading">Listando Mesas</div>
+                    <div class="panel-heading">Listando Imagem relacionada ao Produto</div>
                     <table class="table table-striped table-bordered table-hover" id="example">
                         <thead>
                             <tr id="titulo_tabela">
@@ -191,12 +223,6 @@ while ($linha = mysql_fetch_assoc($resultado)) {
                 </div>
             </div>
         </div>
-
-        <!-- jQuery -->
-        <script src="bootstrap/js/jquery.js"></script>
-
-        <!-- Bootstrap Core JavaScript -->
-        <script src="bootstrap/js/bootstrap.min.js"></script>
 
     </body>
 </html>

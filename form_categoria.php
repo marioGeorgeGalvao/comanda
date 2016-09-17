@@ -1,7 +1,25 @@
-<?php include'/include/conecta_banco.php' ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
     <head>
+        <?php
+        /* esse bloco de código em php verifica se existe a sessão, 
+         * pois o usuário pode simplesmente não fazer o login e digitar 
+         * na barra de endereço do seu navegador o caminho para a 
+         * página principal do site (sistema), burlando assim a obrigação de 
+         * fazer um login, com isso se ele não estiver feito o login não será 
+         * criado a session, então ao verificar que a session não existe a 
+         * página redireciona o mesmo para a index.php. */
+        session_start();
+        if ((!isset($_SESSION['login']) == true) and ( !isset($_SESSION['senha']) == true)) {
+            unset($_SESSION['login']);
+            unset($_SESSION['senha']);
+            header('location:index.php');
+        }
+
+        $logado = $_SESSION['login'];
+        ?>
+        <!-- Fim da sessao -->
+
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,84 +32,155 @@
 
         <!-- Bootstrap core CSS -->
         <!--<link href="../../dist/css/bootstrap.min.css" rel="stylesheet">-->
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-        <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+        <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet" />
 
         <!-- Custom styles for this template -->
-        <link href="css/signin.css" rel="stylesheet">
+        <link href="css/signin.css" rel="stylesheet" />
 
         <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
         <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
         <script src="js/ie-emulation-modes-warning.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
+        <link href="grids/css/demo_table.css" rel="stylesheet" type="text/css" />
+        <link type="text/css" rel="stylesheet" href="css/estilo_tooltip.css" />
+
+        <!--Script do DataTable Inicio -->
+        <script type="text/javascript" language="javascript" src="js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" language="javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" language="javascript" src="js/jquery.dataTables.php"></script>
+
+        <?php include "/js/jquery.dataTables.php"; ?> <!-- Nao pode apagar, isso é responsavel por aparecer os campos do dataTable -->
+
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function () {
+                $('#example').dataTable({
+                    "sPaginationType": "full_numbers"
+                });
+            });
+        </script>
+        <!--Script do DataTable Fim -->
+
+        <?php include 'module/alerts.php' ?>
     </head>
+    <?php
+    error_reporting(E_ALL & ~ E_NOTICE & ~ E_DEPRECATED);
+    $conexao = mysql_connect("localhost", "root", "") or die(mysql_erro());
+    $banco = mysql_selectdb("comanda", $conexao);
+    $sql = ("SELECT * FROM categoria");
+    $resultado = mysql_query($sql);
+    ?>
 
     <body>
 
         <div class="container" >
-            <!-- Inicio Menu -->       
-            <?php include '/include/Menu_legal.php'?>
-            <!-- Fim Menu -->
+            <!-- Menu inicio -->
+            <?php include 'include/Menu_legal.php' ?>
+            <!-- Menu fim -->
 
             <!-- Inicio Formulario de cadastro -->       
-            <h2>CADASTRO DE CATEGORIAS </h2>
-            <!-- Fim Formulario de cadastro -->
-
-            <!-- Inicio Formulario de cadastro -->       
+            <h2>CADASTRO DE CATEGORIA </h2>
 
             <div class="row">
-                <form method="post" action="paginas/categoria/envia_dados_categorias.php" class="form">
-                    <div class="form-group col-md-4">
-                        <label for="campo1">Nome da Categoria</label>
-                        <input name="categoria" type="text" class="form-control" >
+                <form method="post" class="form" action="paginas/categoria/envia_dados_categorias.php">
+                    <div class="col-md-12">
 
-                        <label for="campo1">Descrição categoria</label>
-                        <input name="descricao" type="text" class="form-control" >
+                        <div class="form-group col-md-3">
 
+                            <label for="campo1">Categoria</label>
 
-                        <!--                        <button class="btn btn-lg btn-primary btn-block" type="submit">ENVIAR</button>-->
+                            <input type="text" name="categoria" class="form-control" id="campo1">
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary">Salvar</button>
-                                <a href="form_categoria.php" class="btn btn-default">Cancelar</a>
-                            </div>
                         </div>
 
-                </form>
+
+                        <div class="form-group col-md-8">
+
+                            <label for="campo1">Descrição</label>
+
+                            <input type="text" name="descricao" class="form-control" >
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <button id="btnUpdate" name="btnSave" class="btn btn-primary">Salvar</button>
+
+                            <button id="btnLimpar" name="btnLimpar" class="btn btn-default">Limpar</button>
+
+                        </div>
+
+                    </div> 
+               </form>
             </div>
 
-            <!-- Fim Formulario de cadastro -->
+       
 
+    </div>
 
-            <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-            <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-            <script src="js/jquery.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
+    <!-- Fim Formulario de cadastro -->
+
+    <div class="container">
+
+        <div class="panel panel-success">
+
+            <!---- INICIO DA TABELA ---->
+            <div class="panel-heading">Listando Categorias</div>
+            <table class="table table-striped table-bordered table-hover" id="example">
+                <thead>
+                    <tr id="titulo_tabela">
+                        <th>Id</th>
+                        <th>Categoria</th>
+                        <th>Descrição</th>
+
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+
+                <?php
+                while ($linha = mysql_fetch_assoc($resultado)) {
+
+                    $idcategoria = $linha['idcategoria'];
+                    $categoria = $linha['categoria'];
+                    $descricao = $linha['descricao'];
+                    ?>
+
+                    <tr>
+
+                        <td> <?php echo "<p>  " . $linha ['idcategoria'] . "<br>"; ?> </td>
+
+                        <td> <?php echo "<p>  " . $linha ['categoria'] . "<br>"; ?> </td>
+
+                        <td> <?php echo "<p>  " . $linha ['descricao'] . "<br>"; ?> </td>
+
+                        <td> 
+
+                            <?php printf('<a href="paginas/categoria/deleta_dados_categorias.php?id=%s">Excluir</a>', $linha['idcategoria']); ?>
+
+                            <?php printf('<a href="paginas/categoria/form_editar_categoria.php?id=%s">Alterar</a>', $linha['idcategoria']); ?>
+                        </td>
+
+                    </tr>
+
+                <?php } ?>
+            </table>
+            <!---- FIM DA TABELA ---->
+
         </div>
+    </div>
+</div>
 
+        <!-- jQuery -->
+        <script src="bootstrap/js/jquery.js"></script>
 
-        <!-- Grid Usuario -----------------INICIO------------------------------>
-        <?php include '/grids/grid_categoria.php' ?>
-        <!-- Grid Usuario -----------------FIM--------------------------------->
+        <!-- Bootstrap Core JavaScript -->
+        <script src="bootstrap/js/bootstrap.min.js"></script>
 
-
-    </body>
+</body>
 </html>
-
-<?php
-mysql_free_result($resultado);
-mysql_close($conexao);
-?>
-
-

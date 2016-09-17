@@ -12,15 +12,13 @@
          * criado a session, então ao verificar que a session não existe a 
          * página redireciona o mesmo para a index.php. */
         session_start();
-        if ((!isset($_SESSION['login']) == true) and ( !isset($_SESSION['senha']) == true) and ( !isset($_SESSION['id_nivel']) == true)) {
+        if ((!isset($_SESSION['login']) == true) and ( !isset($_SESSION['senha']) == true)) {
             unset($_SESSION['login']);
             unset($_SESSION['senha']);
-            unset($_SESSION['id_nivel']);
             header('location:index.php');
         }
 
         $logado = $_SESSION['login'];
-        
         ?>
         <!-- Fim da sessao -->
         
@@ -32,7 +30,7 @@
         <meta name="author" content="">
         <link rel="icon" href="favicon.ico">
 
-        <title>SCE - Sistema de Comanda Eletrônica</title>
+        <title>Nome do Restaurante</title>
 
         <!-- Bootstrap core CSS -->
         <!--<link href="../../dist/css/bootstrap.min.css" rel="stylesheet">-->
@@ -61,106 +59,32 @@
     <body>
 
         <div class="container" >
-            
+
             <?php include 'include/Menu_legal.php'?>
 
-           <?php 
-
-		if($_GET['btn'] == "nova"){
-
-			include "vender.php";
-
-		}elseif($_GET['btn'] == "cadastroProdutos"){
-
-			include "cadastroProdutos.php";
-
-		}elseif($_GET['btn'] == "alterapreco"){
-
-			include "alterapreco.php";
-
-		}elseif($_GET['btn'] == "relatorio"){
-
-			include "relatorio.php";
-
-		}
-
-		elseif($_GET['btn'] == "config"){
-
-			include "config.php";
-
-		}
-
-		elseif($_GET['btn'] == "mesa"){
-
-			include "tela_mesa.php";
-
-		}
-
-		elseif($_GET['btn'] == "entrega"){
-
-			include "entrega.php";
-
-		}
-
-		elseif($_GET['btn'] == "vendermesa"){
-
-			include "comanda.php";
-
-		}
-
-		elseif($_GET['btn'] == "categoria"){
-
-			include "categoria.php";
-
-		}
-
-		elseif($_GET['btn'] == "cadastromesa"){
-
-			include "cadastromesa.php";}
-
-			
-
-			elseif($_GET['btn'] == "vendapedido"){
-
-			include "vendapedido.php";
-
-		}
-
-		elseif($_GET['btn'] == "cadastroclientes"){
-
-			include "cadastrarcliente.php";
-
-		}
-
-		elseif($_GET['btn'] == "cadGarcon"){
-
-			include "cadGarcon.php";
-
-		}
-
-		elseif($_GET['btn'] == "relatoriogarcon"){
-
-			include "relatoriogarcon.php";
-
-		}
-
-		elseif($_GET['btn'] == "garcon"){
-
-			include "vendagarcon.php";
-
-		}
-
-	?>
-	
-	<!-- jQuery -->
-    <script src="bootstrap/js/jquery.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+           <div>
+               <br>
+               <h1>RELATÓRIOS</h1>
+                <br>
+               <div class="panel-group">
+                   <div class="panel panel-primary">
+                       <div class="panel-body"><a href="#"> Relatórios de Vendas</a></div>
+                   </div>
+                   <div class="panel panel-primary">
+                       <div class="panel-body"><a href="#"> Relatórios de Produtos</a></div>
+                   </div>
+                   <div class="panel panel-primary">
+                       <div class="panel-body"><a href="#"> Relatórios de Logs de usuarios</a></div>
+                   </div>
+                   <div class="panel panel-primary">
+                       <div class="panel-body"><a href="#"> Relatórios de Comandas (Pedidos)</a></div>
+                   </div>
+               </div>
+           </div>
             
 
-    </body>
-</html>
+                    </body>
+                    </html>
 
                 
 
